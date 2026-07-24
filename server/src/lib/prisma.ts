@@ -1,7 +1,7 @@
-import pkg from '@prisma/client'
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const { PrismaClient } = require('@prisma/client')
 import type { PrismaClient as PrismaClientType } from '@prisma/client'
-
-const { PrismaClient } = pkg;
 
 // Singleton pattern: prevents multiple PrismaClient instances during hot-reload (tsx watch)
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClientType }
