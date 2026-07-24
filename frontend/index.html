@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Zaheer's AI – Agentic AI Platform</title>
+    <meta name="title" content="Zaheer's AI – Agentic AI Platform" />
+    <meta name="description" content="Zaheer's AI is your personal intelligent agent. Ask anything, search the web, read your documents, and get real-time answers — all in one place." />
+    <meta name="keywords" content="AI, chatbot, agentic AI, document search, web search, Zaheer's AI" />
+    <meta name="author" content="Zaheer's AI" />
+    <meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Zaheer's AI – Agentic AI Platform" />
+    <meta property="og:description" content="Your personal intelligent agent. Search the web, read documents, and get real-time answers." />
+    <meta property="og:image" content="/lafzlines_logo_1777405942720.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:title" content="Zaheer's AI – Agentic AI Platform" />
+    <meta property="twitter:description" content="Your personal intelligent agent. Search the web, read documents, and get real-time answers." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Prevent flash of wrong theme -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = stored === 'dark' || (!stored && prefersDark);
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

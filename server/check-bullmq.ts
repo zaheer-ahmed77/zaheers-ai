@@ -1,0 +1,1 @@
+import { Queue } from 'bullmq'; import 'dotenv/config'; const q = new Queue('file-ingest', { connection: { url: process.env.REDIS_URL } }); q.getJobs(['wait', 'active', 'delayed', 'completed', 'failed']).then(jobs => { console.log(jobs.map(j => ({ id: j.id, name: j.name, data: j.data, failedReason: j.failedReason }))); process.exit(0); });

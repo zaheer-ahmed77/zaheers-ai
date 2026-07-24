@@ -1,0 +1,6 @@
+node_modules/
+.env
+dist/
+.temp/
+coverage/
+.DS_Store
