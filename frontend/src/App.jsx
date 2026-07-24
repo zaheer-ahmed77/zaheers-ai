@@ -82,20 +82,27 @@ function AuraApp({ onOpenMemory }) {
 
       <div className="flex-1 flex flex-col relative transition-all duration-300 min-w-0">
 
-        {/* Mobile header bar */}
-        <div className="absolute top-4 left-4 z-20 flex gap-2">
-          {!isSidebarOpen && (
+        {/* Mobile Header Bar (Visible only on small screens) */}
+        <div className="lg:hidden flex items-center justify-between bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 z-30">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-[#2a2b2f] text-slate-600 dark:text-[#c4c7c5] transition-colors shadow-sm lg:hidden"
+              className="p-1.5 -ml-1.5 rounded-md hover:bg-slate-200 dark:hover:bg-[#2a2b2f] text-slate-700 dark:text-[#c4c7c5] transition-colors"
               aria-label="Open sidebar"
             >
-              <Menu size={20} />
+              <Menu size={24} />
             </button>
-          )}
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+                <img src="/logo.webp" alt="AI" className="w-full h-full object-cover" />
+              </div>
+              <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-[#e3e3e3]">Aura AI</h1>
+            </div>
+          </div>
+          <UserButton />
         </div>
 
-        {/* Desktop top header */}
+        {/* Desktop top header (Visible only on large screens) */}
         <div className="hidden lg:flex justify-between items-center absolute top-4 left-6 right-6 z-10 pointer-events-auto">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg overflow-hidden border border-slate-200 dark:border-slate-800">
