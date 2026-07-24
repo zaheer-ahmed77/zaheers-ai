@@ -25,7 +25,9 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
+          cd server
+          npm install --legacy-peer-deps
+          npx prisma generate
           npm run build --if-present
           npm run test --if-present
 
@@ -33,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: server/
 
   deploy:
     runs-on: ubuntu-latest
