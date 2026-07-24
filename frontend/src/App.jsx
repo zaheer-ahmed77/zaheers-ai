@@ -53,7 +53,7 @@ function AuraApp({ onOpenMemory }) {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-[#e3e3e3] overflow-hidden font-sans transition-colors duration-300">
+    <div className="flex h-[100dvh] bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-[#e3e3e3] overflow-hidden font-sans transition-colors duration-300">
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -143,7 +143,7 @@ function InnerApp() {
 
   if (!isLoaded) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-[#0b0f19]">
+      <div className="h-[100dvh] w-full flex items-center justify-center bg-slate-50 dark:bg-[#0b0f19]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg overflow-hidden border border-slate-200 dark:border-slate-800">
             <img src="/logo.webp" alt="AI" className="w-full h-full object-cover" />
