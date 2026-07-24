@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, Plus, MessageSquare, Settings, Trash2, Bot } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
-import { SignOutButton } from '@clerk/react';
+import { SignOutButton, UserButton } from '@clerk/react';
 import { LogOut } from 'lucide-react';
 
 /**
