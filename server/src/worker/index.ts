@@ -93,7 +93,7 @@ const worker = new Worker('file-ingest', async job => {
 
     if (fileName.toLowerCase().endsWith('.pdf')) {
       console.log(`[Worker] Parsing PDF with pdf-parse-new...`)
-      const data = await pdfParse(buffer)
+      const data = await (pdfParse as any)(buffer)
       extractedText = data.text
       console.log(`[Worker] ✅ PDF parsed: ${extractedText.length} characters across ${data.numpages} page(s)`)
     } else if (fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx')) {
