@@ -63,11 +63,6 @@ const Sidebar = ({ isOpen, toggleSidebar, onNewChat, history, onSelectHistory, o
         >
           <Menu size={20} />
         </button>
-        {isOpen && (
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-          </div>
-        )}
       </div>
 
       {/* Branding (collapsed state) */}
@@ -165,11 +160,27 @@ const Sidebar = ({ isOpen, toggleSidebar, onNewChat, history, onSelectHistory, o
 
       {/* Footer */}
       <div className="p-3 mb-2 flex flex-col gap-1 border-t border-slate-200 dark:border-slate-800">
-        {!isOpen && (
-          <div className="flex justify-center mb-2">
-            <ThemeToggle />
+        <div className="flex items-center justify-between px-2 py-2 mb-1">
+          {isOpen && <ThemeToggle />}
+          {!isOpen && (
+            <div className="flex w-full justify-center">
+              <ThemeToggle />
+            </div>
+          )}
+        </div>
+        
+        {isOpen && (
+          <div className="px-3 py-2 flex items-center gap-3 mb-1">
+             <UserButton />
+             <span className="text-sm font-medium text-slate-700 dark:text-[#e3e3e3]">My Account</span>
           </div>
         )}
+        {!isOpen && (
+          <div className="flex w-full justify-center py-2 mb-1">
+             <UserButton />
+          </div>
+        )}
+
         <button
           onClick={onOpenMemory}
           className={`flex items-center gap-3 w-full p-3 rounded-full hover:bg-slate-200 dark:hover:bg-[#2a2b2f] text-slate-700 dark:text-[#e3e3e3] transition-colors duration-200 ${!isOpen ? 'justify-center' : ''}`}
