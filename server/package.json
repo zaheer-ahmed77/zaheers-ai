@@ -9,7 +9,6 @@
     "worker": "tsx watch src/worker/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "postinstall": "npx prisma generate",
     "db:push": "prisma db push",
     "db:generate": "prisma generate"
   },
