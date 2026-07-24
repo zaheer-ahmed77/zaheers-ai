@@ -99,7 +99,7 @@ const worker = new Worker('file-ingest', async job => {
     } else if (fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx')) {
       console.log(`[Worker] Parsing Word document with officeparser...`)
       const officeParser = await import('officeparser')
-      extractedText = await officeParser.parseOffice(buffer)
+      extractedText = (await officeParser.parseOffice(buffer)) as any as string
       console.log(`[Worker] ✅ Word document parsed: ${extractedText.length} characters`)
     } else {
       extractedText = buffer.toString('utf-8')
@@ -197,7 +197,7 @@ const worker = new Worker('file-ingest', async job => {
     if (allVectors.length > 0) {
       console.log(`[Worker] Upserting ${allVectors.length} vectors to Pinecone index "${process.env.PINECONE_INDEX}"...`)
       try {
-        await index.upsert(allVectors)
+        await index.upsert(allVectors as any)
       } catch (e) {
         // Fallback for different pinecone sdk version shapes
         await index.upsert({ records: allVectors })
