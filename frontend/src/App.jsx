@@ -83,7 +83,7 @@ function AuraApp({ onOpenMemory }) {
       <div className="flex-1 flex flex-col relative transition-all duration-300 min-w-0">
 
         {/* Mobile Header Bar (Visible only on small screens) */}
-        <div className="lg:hidden flex items-center justify-between bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 z-30">
+        <div className="lg:hidden flex items-center justify-between bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 pt-5 pb-3 z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}

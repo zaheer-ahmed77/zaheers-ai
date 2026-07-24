@@ -1,8 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <clipPath id="squircle">
-      <rect width="512" height="512" rx="128" ry="128" />
-    </clipPath>
+    <!-- Outer Glow -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="20" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
-  <image href="logo.webp" width="512" height="512" clip-path="url(#squircle)" preserveAspectRatio="xMidYMid slice" />
+
+  <g transform="translate(100, 100) scale(0.6)">
+    <!-- The glowing Z -->
+    <path 
+      d="M100,100 L400,100 L150,400 L450,400" 
+      fill="none" 
+      stroke="#FF6B00" 
+      stroke-width="60" 
+      stroke-linecap="round" 
+      stroke-linejoin="round"
+      filter="url(#glow)"
+    />
+    <!-- Inner bright line for neon effect -->
+    <path 
+      d="M100,100 L400,100 L150,400 L450,400" 
+      fill="none" 
+      stroke="#FFD5B8" 
+      stroke-width="20" 
+      stroke-linecap="round" 
+      stroke-linejoin="round"
+    />
+  </g>
 </svg>
