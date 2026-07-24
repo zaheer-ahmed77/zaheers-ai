@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "check-bullmq.ts", "test-langchain-vision.ts"]
+  "include": ["src/**/*"]
 }
