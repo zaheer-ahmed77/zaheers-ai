@@ -1,35 +1,59 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Outer Glow -->
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="20" result="blur" />
+    <!-- Premium Multi-stop Gradient -->
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF3366" />
+      <stop offset="50%" stop-color="#FF6B00" />
+      <stop offset="100%" stop-color="#FFD100" />
+    </linearGradient>
+
+    <!-- Deep Outer Glow for Premium Feel -->
+    <filter id="premiumGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="35" result="blur1" />
+      <feGaussianBlur stdDeviation="15" result="blur2" />
       <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="blur" />
+        <feMergeNode in="blur1" />
+        <feMergeNode in="blur2" />
         <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
+
+    <!-- Inner Shadow for 3D depth -->
+    <filter id="innerShadow">
+      <feOffset dx="2" dy="2"/>
+      <feGaussianBlur stdDeviation="3" result="offset-blur"/>
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+      <feFlood flood-color="white" flood-opacity="0.8" result="color"/>
+      <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+      <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+    </filter>
   </defs>
 
-  <g transform="translate(100, 100) scale(0.6)">
-    <!-- The glowing Z -->
+  <g transform="translate(256, 256)">
+    <!-- Central sleek AI-inspired 'Z' logo -->
     <path 
-      d="M100,100 L400,100 L150,400 L450,400" 
+      d="M-120,-120 L120,-120 L-80,120 L140,120" 
       fill="none" 
-      stroke="#FF6B00" 
-      stroke-width="60" 
+      stroke="url(#neonGradient)" 
+      stroke-width="55" 
       stroke-linecap="round" 
       stroke-linejoin="round"
-      filter="url(#glow)"
+      filter="url(#premiumGlow)"
     />
-    <!-- Inner bright line for neon effect -->
+    
+    <!-- White inner highlight for sharp glass/neon effect -->
     <path 
-      d="M100,100 L400,100 L150,400 L450,400" 
+      d="M-120,-120 L120,-120 L-80,120 L140,120" 
       fill="none" 
-      stroke="#FFD5B8" 
-      stroke-width="20" 
+      stroke="#FFFFFF" 
+      stroke-width="12" 
       stroke-linecap="round" 
       stroke-linejoin="round"
+      opacity="0.9"
     />
+
+    <!-- Decorative AI connection dots -->
+    <circle cx="-120" cy="-120" r="18" fill="#FFF" filter="url(#premiumGlow)" />
+    <circle cx="140" cy="120" r="18" fill="#FFF" filter="url(#premiumGlow)" />
   </g>
 </svg>
