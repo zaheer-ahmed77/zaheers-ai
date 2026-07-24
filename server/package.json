@@ -8,7 +8,7 @@
     "dev": "tsx watch src/index.ts",
     "worker": "tsx watch src/worker/index.ts",
     "build": "tsc",
-    "start": "chmod +x node_modules/.bin/prisma && npx prisma generate && node dist/index.js",
+    "start": "npx prisma generate && node dist/index.js",
     "db:push": "prisma db push",
     "db:generate": "prisma generate"
   },
@@ -35,13 +35,13 @@
     "pdf-parse": "^1.1.1",
     "pdf-parse-new": "^2.1.0",
     "svix": "^1.45.1",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "prisma": "^6.3.0",
+    "typescript": "^5.7.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/node": "^22.12.0",
-    "prisma": "^6.3.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "tsx": "^4.19.2"
   }
 }
