@@ -14,13 +14,22 @@ export default function LoginPage({ onGuestLogin }) {
         <ThemeToggle />
       </div>
 
-      {/* New Modern Dot Pattern Background (Visible in Light & Dark Mode) */}
+      {/* Light Mode Dots */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="absolute inset-0 z-0 pointer-events-none dark:hidden"
         style={{
-          backgroundImage: "radial-gradient(currentColor 1.5px, transparent 1.5px)",
+          backgroundImage: "radial-gradient(rgba(0,0,0,0.25) 1.5px, transparent 1.5px)",
           backgroundSize: "32px 32px",
-          opacity: 0.15,
+          WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 90%)",
+          maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 90%)",
+        }}
+      />
+      {/* Dark Mode Dots */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none hidden dark:block"
+        style={{
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.15) 1.5px, transparent 1.5px)",
+          backgroundSize: "32px 32px",
           WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 90%)",
           maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, #000 30%, transparent 90%)",
         }}
@@ -66,9 +75,9 @@ export default function LoginPage({ onGuestLogin }) {
                 routing="hash"
                 appearance={{
                   elements: {
-                    rootBox: { width: "100%" },
-                    cardBox: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0 },
-                    card: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0, width: "100%" },
+                    rootBox: { width: "100%", overflow: "visible" },
+                    cardBox: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0, overflow: "visible" },
+                    card: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0, width: "100%", overflow: "visible" },
                     headerTitle: { color: "var(--clerk-text-main)" },
                     headerSubtitle: { color: "var(--clerk-text-muted)" },
                     socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
@@ -78,7 +87,8 @@ export default function LoginPage({ onGuestLogin }) {
                       backgroundColor: "var(--clerk-input-bg)",
                       borderColor: "var(--clerk-border)"
                     },
-                    dividerText: { color: "var(--clerk-text-muted)" },
+                    dividerText: { color: "#9ca3af" },
+                    dividerLine: { background: "#4b5563" },
                     identityPreviewText: { color: "var(--clerk-text-main)" },
                     socialButtonsBlockButton: { 
                       backgroundColor: "var(--clerk-social-bg)", 
