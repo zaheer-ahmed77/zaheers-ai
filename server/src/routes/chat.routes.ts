@@ -20,7 +20,7 @@ import { createSaveMemoryTool, createQueryMemoryTool, createDeleteMemoryTool } f
 
 export const chatRoutes = new Hono()
 
-const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-2.5-flash']
+const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-3.5-flash']
 
 const getModel = (modelName: string) => {
   if (modelName === 'llama-3.3-70b-versatile' && process.env.GROQ_API_KEY) {
@@ -32,7 +32,7 @@ const getModel = (modelName: string) => {
   }
   // Default to Gemini Flash
   return new ChatGoogleGenerativeAI({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.5-flash",
     apiKey: process.env.GEMINI_API_KEY,
     temperature: 0.7,
     safetySettings: [
@@ -132,10 +132,10 @@ chatRoutes.post('/', async (c) => {
     return c.json({ error: 'Message text is required' }, 400)
   }
 
-  // If there's an image, Groq won't support it well, force Gemini Flash Lite
+  // If there's an image, Groq won't support it well, force Gemini Flash
   const modelName = imageBase64 
-    ? 'gemini-2.5-flash' 
-    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'gemini-2.5-flash')
+    ? 'gemini-3.5-flash' 
+    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'gemini-3.5-flash')
 
   let user = null;
   let chat = null;
