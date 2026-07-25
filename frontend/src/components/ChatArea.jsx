@@ -130,8 +130,7 @@ const ThinkingIndicator = ({ status }) => {
 // Model definitions
 // ---------------------------------------------------------------------------
 const MODELS = [
-  { value: 'openrouter-auto', label: 'Gemini 2.5 Flash', sublabel: 'via OpenRouter', icon: '✦' },
-  { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite', sublabel: 'Direct · Fastest', icon: '⚡' },
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', sublabel: 'Default · Smart & Fast', icon: '✦' },
   { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'via Groq', icon: '🦙' },
 ];
 
