@@ -36,6 +36,7 @@ export const uploadRoutes = new Hono()
 
 uploadRoutes.post('/', async (c) => {
   const auth = getAuth(c)
+  if (c.req.header('X-Guest-Mode') === 'true') return c.json({ error: 'Guest mode forbidden' }, 403)
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
 
   try {
@@ -77,6 +78,7 @@ uploadRoutes.post('/', async (c) => {
 
 uploadRoutes.get('/status/:jobId', async (c) => {
   const auth = getAuth(c)
+  if (c.req.header('X-Guest-Mode') === 'true') return c.json({ error: 'Guest mode forbidden' }, 403)
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
 
   const jobId = c.req.param('jobId')

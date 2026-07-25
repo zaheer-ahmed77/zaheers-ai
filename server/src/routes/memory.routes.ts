@@ -7,6 +7,7 @@ export const memoryRoutes = new Hono()
 // Get all memories for user
 memoryRoutes.get('/', async (c) => {
   const auth = getAuth(c)
+  if (c.req.header('X-Guest-Mode') === 'true') return c.json({ error: 'Guest mode forbidden' }, 403)
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
   
   const user = await prisma.user.findUnique({ where: { clerkId: auth.userId } })
@@ -19,6 +20,7 @@ memoryRoutes.get('/', async (c) => {
 // Create a new memory
 memoryRoutes.post('/', async (c) => {
   const auth = getAuth(c)
+  if (c.req.header('X-Guest-Mode') === 'true') return c.json({ error: 'Guest mode forbidden' }, 403)
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
   
   const { key, value } = await c.req.json()
@@ -39,6 +41,7 @@ memoryRoutes.post('/', async (c) => {
 // Delete a memory
 memoryRoutes.delete('/:id', async (c) => {
   const auth = getAuth(c)
+  if (c.req.header('X-Guest-Mode') === 'true') return c.json({ error: 'Guest mode forbidden' }, 403)
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
   
   const id = c.req.param('id')

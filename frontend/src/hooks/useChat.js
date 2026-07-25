@@ -2,11 +2,15 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '@clerk/react';
 import { API_BASE_URL } from '../utils/config';
 
-export const useChat = () => {
+export const useChat = (isGuest) => {
   const [history, setHistory] = useState([]);
   const { getToken } = useAuth();
 
   const fetchHistory = useCallback(async () => {
+    if (isGuest) {
+      setHistory([]);
+      return;
+    }
     try {
       const token = await getToken();
       const res = await fetch(`${API_BASE_URL}/api/chat/history`, {
@@ -23,6 +27,7 @@ export const useChat = () => {
   }, [getToken]);
 
   const deleteChat = useCallback(async (chatId) => {
+    if (isGuest) return false;
     try {
       const token = await getToken();
       const res = await fetch(`${API_BASE_URL}/api/chat/${chatId}`, {

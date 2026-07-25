@@ -14,7 +14,7 @@ export const normalizeMessages = (dbMessages) => {
   }));
 };
 
-export const useMessages = () => {
+export const useMessages = (isGuest) => {
   const [messages, setMessages] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [thinkingStatus, setThinkingStatus] = useState(''); // e.g. "Searching the web..."
@@ -33,27 +33,33 @@ export const useMessages = () => {
     setThinkingStatus('');
 
     let token;
-    try {
-      token = await getToken();
-    } catch {
-      setMessages((prev) => [...prev, { role: 'ai', text: 'Authentication failed. Please sign in again.', id: `ai-err-${Date.now()}` }]);
-      setIsGenerating(false);
-      return;
+    if (!isGuest) {
+      try {
+        token = await getToken();
+      } catch {
+        setMessages((prev) => [...prev, { role: 'ai', text: 'Authentication failed. Please sign in again.', id: `ai-err-${Date.now()}` }]);
+        setIsGenerating(false);
+        return;
+      }
     }
+
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (isGuest) headers['X-Guest-Mode'] = 'true';
 
     let response;
     try {
       response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
         body: JSON.stringify({ 
           text: text.trim() || 'Please process the attached image.', 
           chatId: currentChatId, 
           model,
-          ...(imageBase64 && { imageBase64 })
+          ...(imageBase64 && { imageBase64 }),
+          ...(isGuest && { chatHistory: messages })
         }),
       });
     } catch (networkErr) {

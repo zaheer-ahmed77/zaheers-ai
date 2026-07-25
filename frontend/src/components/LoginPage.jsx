@@ -2,7 +2,7 @@ import React from 'react';
 import { SignIn } from "@clerk/react";
 import ThemeToggle from './ThemeToggle';
 
-export default function LoginPage() {
+export default function LoginPage({ onGuestLogin }) {
   function getCurrentYear() {
     return new Date().getFullYear();
   }
@@ -72,7 +72,7 @@ export default function LoginPage() {
                   socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
                   formFieldLabel: { color: "var(--clerk-text-main)" },
                   formFieldInput: { 
-                    color: "var(--clerk-text-main)", 
+                    color: "var(--clerk-input-text)", 
                     backgroundColor: "var(--clerk-input-bg)",
                     borderColor: "var(--clerk-border)"
                   },
@@ -86,6 +86,26 @@ export default function LoginPage() {
                 },
               }}
             />
+          </div>
+
+          <div className="mt-6 w-full max-w-md flex flex-col items-center justify-center">
+            <div className="flex w-full items-center gap-4 mb-6">
+              <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
+              <span className="text-xs font-medium text-slate-400">OR</span>
+              <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
+            </div>
+            
+            <button
+              onClick={onGuestLogin}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-medium text-sm transition-colors shadow-sm"
+            >
+              <div className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                </svg>
+              </div>
+              Continue as Guest (No History)
+            </button>
           </div>
 
           <div className="md:hidden mt-8 text-xs text-slate-400 dark:text-slate-500 font-medium">© {getCurrentYear()} Zaheer's AI Inc. All rights reserved.</div>

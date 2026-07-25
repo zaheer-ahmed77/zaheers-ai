@@ -5,14 +5,15 @@ import { Menu, Bot } from 'lucide-react';
 import { UserButton } from '@clerk/react';
 import { useChat } from './hooks/useChat';
 import { useMessages, normalizeMessages } from './hooks/useMessages';
+import { LogOut } from 'lucide-react';
 
-function AuraApp({ onOpenMemory }) {
+function AuraApp({ onOpenMemory, isGuest, onGuestLogout }) {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [selectedModel, setSelectedModel] = useState('openrouter-auto');
 
-  const { history, fetchHistory, deleteChat } = useChat();
-  const { messages, setInitialMessages, sendMessage, isGenerating, thinkingStatus } = useMessages();
+  const { history, fetchHistory, deleteChat } = useChat(isGuest);
+  const { messages, setInitialMessages, sendMessage, isGenerating, thinkingStatus } = useMessages(isGuest);
 
   useEffect(() => {
     fetchHistory();
@@ -99,7 +100,13 @@ function AuraApp({ onOpenMemory }) {
               <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-[#e3e3e3]">Aura AI</h1>
             </div>
           </div>
-          <UserButton />
+          {isGuest ? (
+            <button onClick={onGuestLogout} className="text-xs font-medium bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300">
+              <LogOut size={14} /> Exit Guest
+            </button>
+          ) : (
+            <UserButton />
+          )}
         </div>
 
         {/* Desktop top header (Visible only on large screens) */}
@@ -117,8 +124,22 @@ function AuraApp({ onOpenMemory }) {
               </span>
             </div>
           </div>
-          <UserButton />
+          {isGuest ? (
+            <button onClick={onGuestLogout} className="text-sm font-medium bg-white dark:bg-[#1e1f20] border border-slate-200 dark:border-slate-800 shadow-sm px-4 py-2 rounded-full flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-[#2a2b2f] transition-colors text-slate-700 dark:text-slate-300">
+              <LogOut size={16} /> Exit Guest Mode
+            </button>
+          ) : (
+            <UserButton />
+          )}
         </div>
+
+        {isGuest && (
+          <div className="absolute top-16 lg:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 text-xs font-medium px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800/50 shadow-sm backdrop-blur-sm">
+              Guest Mode - History is not saved
+            </div>
+          </div>
+        )}
 
         <ChatArea
           messages={messages}
@@ -140,6 +161,17 @@ import MemoryModal from './components/MemoryModal';
 function InnerApp() {
   const { isLoaded, isSignedIn } = useAuth();
   const [isMemoryModalOpen, setMemoryModalOpen] = useState(false);
+  const [isGuest, setIsGuest] = useState(() => localStorage.getItem('guestMode') === 'true');
+
+  const handleGuestLogin = () => {
+    setIsGuest(true);
+    localStorage.setItem('guestMode', 'true');
+  };
+
+  const handleGuestLogout = () => {
+    setIsGuest(false);
+    localStorage.removeItem('guestMode');
+  };
 
   if (!isLoaded) {
     return (
@@ -154,16 +186,21 @@ function InnerApp() {
     );
   }
 
-  if (isSignedIn) {
+  if (isSignedIn || isGuest) {
+    const activeGuest = isGuest && !isSignedIn;
     return (
       <>
-        <AuraApp onOpenMemory={() => setMemoryModalOpen(true)} />
-        <MemoryModal isOpen={isMemoryModalOpen} onClose={() => setMemoryModalOpen(false)} />
+        <AuraApp 
+          onOpenMemory={() => setMemoryModalOpen(true)} 
+          isGuest={activeGuest}
+          onGuestLogout={handleGuestLogout}
+        />
+        {!activeGuest && <MemoryModal isOpen={isMemoryModalOpen} onClose={() => setMemoryModalOpen(false)} />}
       </>
     );
   }
 
-  return <LoginPage />;
+  return <LoginPage onGuestLogin={handleGuestLogin} />;
 }
 
 function App() {

@@ -66,6 +66,9 @@ const getModel = (modelName: string) => {
 
 chatRoutes.get('/history', async (c) => {
   const auth = getAuth(c)
+  const isGuest = c.req.header('X-Guest-Mode') === 'true'
+  
+  if (isGuest) return c.json({ history: [] })
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
 
   try {
@@ -92,6 +95,9 @@ chatRoutes.get('/history', async (c) => {
 
 chatRoutes.delete('/:id', async (c) => {
   const auth = getAuth(c)
+  const isGuest = c.req.header('X-Guest-Mode') === 'true'
+  
+  if (isGuest) return c.json({ success: true })
   if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
 
   const chatId = c.req.param('id')
@@ -118,16 +124,18 @@ chatRoutes.delete('/:id', async (c) => {
 
 chatRoutes.post('/', async (c) => {
   const auth = getAuth(c)
-  if (!auth?.userId) return c.json({ error: 'Unauthorized' }, 401)
+  const isGuest = c.req.header('X-Guest-Mode') === 'true'
+  
+  if (!auth?.userId && !isGuest) return c.json({ error: 'Unauthorized' }, 401)
 
-  let body: { text?: string; chatId?: string; model?: string; imageBase64?: string }
+  let body: { text?: string; chatId?: string; model?: string; imageBase64?: string; chatHistory?: any[] }
   try {
     body = await c.req.json()
   } catch {
     return c.json({ error: 'Invalid JSON body' }, 400)
   }
 
-  const { text, chatId, model: requestedModel, imageBase64 } = body
+  const { text, chatId, model: requestedModel, imageBase64, chatHistory: clientChatHistory } = body
   if (!text || typeof text !== 'string' || !text.trim()) {
     return c.json({ error: 'Message text is required' }, 400)
   }
@@ -137,63 +145,83 @@ chatRoutes.post('/', async (c) => {
     ? 'gemini-2.5-flash-lite' 
     : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'openrouter-auto')
 
-  // Upsert user
-  let user = await prisma.user.findUnique({ where: { clerkId: auth.userId } })
-  if (!user) {
-    user = await prisma.user.create({
-      data: { clerkId: auth.userId, email: `${auth.userId}@placeholder.com` }
-    })
-  }
-
-  // Upsert chat
-  let chat = chatId ? await prisma.chat.findUnique({ where: { id: chatId } }) : null
-  if (!chat) {
-    chat = await prisma.chat.create({
-      data: { userId: user.id, title: text.trim().substring(0, 60) }
-    })
-  } else {
-    // Bump updatedAt so it appears at the top of history
-    await prisma.chat.update({ where: { id: chat.id }, data: { updatedAt: new Date() } })
-  }
-
-  // (Removed static memory fetch - AI now uses query_memory tool dynamically)
-
-  // Fetch conversation history for this chat (up to last 20 messages)
-  const previousMessages = await prisma.message.findMany({
-    where: { chatId: chat.id },
-    orderBy: { createdAt: 'asc' },
-    take: 20,
-  })
-
-  // Convert DB messages to LangChain messages
-  const chatHistory: BaseMessage[] = previousMessages.map(msg => {
-    if (msg.role === 'user') {
-      // If there's a base64 markdown tag in DB, strip it so we don't send massive base64 text strings to LLM
-      const cleanContent = msg.content.replace(/!\[.*?\]\(data:image\/.*?\)/g, '[Image attached previously]').trim()
-      return new HumanMessage(cleanContent)
+  let user = null;
+  let chat = null;
+  
+  if (!isGuest && auth?.userId) {
+    user = await prisma.user.findUnique({ where: { clerkId: auth.userId } })
+    if (!user) {
+      user = await prisma.user.create({
+        data: { clerkId: auth.userId, email: `${auth.userId}@placeholder.com` }
+      })
     }
-    return new AIMessage(msg.content)
-  })
 
-  // Save user's new message to DB. If image exists, embed it as a markdown image so it displays in UI history.
-  const dbContent = imageBase64 ? `${text.trim()}\n\n![Attached Image](${imageBase64})` : text.trim()
-  await prisma.message.create({
-    data: { chatId: chat.id, role: 'user', content: dbContent }
-  })
+    chat = chatId ? await prisma.chat.findUnique({ where: { id: chatId } }) : null
+    if (!chat) {
+      chat = await prisma.chat.create({
+        data: { userId: user.id, title: text.trim().substring(0, 60) }
+      })
+    } else {
+      await prisma.chat.update({ where: { id: chat.id }, data: { updatedAt: new Date() } })
+    }
+    
+    const dbContent = imageBase64 ? `${text.trim()}\n\n![Attached Image](${imageBase64})` : text.trim()
+    await prisma.message.create({
+      data: { chatId: chat.id, role: 'user', content: dbContent }
+    })
+  }
+
+  let chatHistory: BaseMessage[] = []
+  
+  if (isGuest) {
+    if (clientChatHistory && Array.isArray(clientChatHistory)) {
+      // Omit the very last message if it's the current one we are processing, to avoid duplication
+      const historyToUse = clientChatHistory.slice(0, -1);
+      chatHistory = historyToUse.map(msg => {
+        if (msg.role === 'user') {
+          const cleanContent = (msg.text || '').replace(/!\[.*?\]\(data:image\/.*?\)/g, '[Image attached previously]').trim()
+          return new HumanMessage(cleanContent)
+        }
+        return new AIMessage(msg.text || '')
+      })
+    }
+  } else if (chat) {
+    const previousMessages = await prisma.message.findMany({
+      where: { chatId: chat.id },
+      orderBy: { createdAt: 'asc' },
+      take: 20,
+    })
+    
+    chatHistory = previousMessages.map(msg => {
+      // Exclude the message we just created above
+      if (msg.role === 'user') {
+        const cleanContent = msg.content.replace(/!\[.*?\]\(data:image\/.*?\)/g, '[Image attached previously]').trim()
+        return new HumanMessage(cleanContent)
+      }
+      return new AIMessage(msg.content)
+    })
+    // Remove the last message from history since LangChain will receive it as `input`
+    chatHistory.pop()
+  }
 
   return streamSSE(c, async (stream) => {
     try {
       const llm = getModel(modelName)
-      const tools = [
+      let tools = [
         timeTool,
         weatherTool,
         internetSearchTool,
-        createRagSearchTool(user!.id),
-        createReadFullDocumentTool(user!.id),
-        createSaveMemoryTool(user!.id),
-        createQueryMemoryTool(user!.id),
-        createDeleteMemoryTool(user!.id),
       ]
+      
+      if (!isGuest && user) {
+        tools.push(
+          createRagSearchTool(user.id),
+          createReadFullDocumentTool(user.id),
+          createSaveMemoryTool(user.id),
+          createQueryMemoryTool(user.id),
+          createDeleteMemoryTool(user.id)
+        )
+      }
 
       const currentDate = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
       const systemPrompt = `You are Zaheer's AI, a highly intelligent, fully-capable, and personalized general-purpose AI agent. You have access to tools and you MUST use them.
@@ -245,7 +273,11 @@ TOOLS AVAILABLE:
       let aiResponseText = ""
 
       // Send the chatId first so the client can track the session
-      await stream.writeSSE({ data: `[System: ChatId=${chat!.id}]\\n` })
+      if (chat) {
+        await stream.writeSSE({ data: `[System: ChatId=${chat.id}]\\n` })
+      } else if (isGuest) {
+        await stream.writeSSE({ data: `[System: ChatId=guest-session-${Date.now()}]\\n` })
+      }
 
       const userMessage = new HumanMessage({
         content: imageBase64 ? [
@@ -286,13 +318,15 @@ TOOLS AVAILABLE:
       }
 
       // Save AI response to DB
-      await prisma.message.create({
-        data: {
-          chatId: chat!.id,
-          role: 'ai',
-          content: aiResponseText.trim() || "I've completed the requested action."
-        }
-      })
+      if (!isGuest && chat) {
+        await prisma.message.create({
+          data: {
+            chatId: chat.id,
+            role: 'ai',
+            content: aiResponseText.trim() || "I've completed the requested action."
+          }
+        })
+      }
 
     } catch (err: any) {
       console.error('Agent Error:', err)
