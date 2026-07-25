@@ -20,7 +20,7 @@ import { createSaveMemoryTool, createQueryMemoryTool, createDeleteMemoryTool } f
 
 export const chatRoutes = new Hono()
 
-const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-3.5-flash']
+const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-1.5-flash']
 
 const getModel = (modelName: string) => {
   if (modelName === 'llama-3.3-70b-versatile' && process.env.GROQ_API_KEY) {
@@ -32,7 +32,7 @@ const getModel = (modelName: string) => {
   }
   // Default to Gemini Flash
   return new ChatGoogleGenerativeAI({
-    model: "gemini-3.5-flash",
+    model: "gemini-1.5-flash",
     apiKey: process.env.GEMINI_API_KEY,
     temperature: 0.7,
     safetySettings: [
@@ -134,8 +134,8 @@ chatRoutes.post('/', async (c) => {
 
   // If there's an image, Groq won't support it well, force Gemini Flash
   const modelName = imageBase64 
-    ? 'gemini-3.5-flash' 
-    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'gemini-3.5-flash')
+    ? 'gemini-1.5-flash' 
+    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'gemini-1.5-flash')
 
   let user = null;
   let chat = null;
@@ -271,12 +271,21 @@ TOOLS AVAILABLE:
         await stream.writeSSE({ data: `[System: ChatId=guest-session-${Date.now()}]\\n` })
       }
 
+      let userMessageContent: any = text.trim();
+      if (imageBase64) {
+        const parts: any[] = [];
+        if (text.trim()) {
+          parts.push({ type: 'text', text: text.trim() });
+        } else {
+          parts.push({ type: 'text', text: "What is in this image?" }); // Fallback if no text provided
+        }
+        parts.push({ type: 'image_url', image_url: { url: imageBase64 } });
+        userMessageContent = parts;
+      }
+
       const userMessage = new HumanMessage({
-        content: imageBase64 ? [
-          { type: 'text', text: text.trim() },
-          { type: 'image_url', image_url: { url: imageBase64 } }
-        ] : text.trim()
-      })
+        content: userMessageContent
+      });
 
       try {
         const eventStream = await agentExecutor.streamEvents(

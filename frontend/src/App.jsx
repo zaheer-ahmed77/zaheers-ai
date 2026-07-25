@@ -10,7 +10,7 @@ import { LogOut } from 'lucide-react';
 function AuraApp({ onOpenMemory, isGuest, onGuestLogout }) {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
   const [currentChatId, setCurrentChatId] = useState(null);
-  const [selectedModel, setSelectedModel] = useState('gemini-3.5-flash');
+  const [selectedModel, setSelectedModel] = useState('gemini-1.5-flash');
 
   const { history, fetchHistory, deleteChat } = useChat(isGuest);
   const { messages, setInitialMessages, sendMessage, isGenerating, thinkingStatus } = useMessages(isGuest);

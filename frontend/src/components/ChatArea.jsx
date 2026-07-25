@@ -130,7 +130,7 @@ const ThinkingIndicator = ({ status }) => {
 // Model definitions
 // ---------------------------------------------------------------------------
 const MODELS = [
-  { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', sublabel: 'Default · Smart & Fast', icon: '✦' },
+  { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', sublabel: 'Default · Smart & Fast', icon: '✦' },
   { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'via Groq', icon: '🦙' },
 ];
 
@@ -225,7 +225,7 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
       if (SpeechRecognition) {
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = true;
-        recognitionRef.current.interimResults = true;
+        recognitionRef.current.interimResults = false; // Only get final results to avoid repetition
         
         recognitionRef.current.onresult = (event) => {
           let currentTranscript = '';
