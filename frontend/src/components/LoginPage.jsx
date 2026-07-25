@@ -60,7 +60,7 @@ export default function LoginPage({ onGuestLogin }) {
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Unleash the full potential of your tasks.</p>
           </div>
 
-          <div className="w-full max-w-[380px] flex flex-col items-center bg-white/70 dark:bg-[#11131a]/80 backdrop-blur-2xl p-5 sm:p-6 rounded-[2rem] border border-white/50 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_0_40px_rgba(120,119,198,0.1)]">
+          <div className="w-full max-w-[440px] flex flex-col items-center bg-white/70 dark:bg-[#11131a]/80 backdrop-blur-2xl p-5 sm:p-6 rounded-[2rem] border border-black dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_0_40px_rgba(120,119,198,0.1)]">
             <div className="w-full flex justify-center">
               <SignIn
                 routing="hash"
@@ -90,11 +90,11 @@ export default function LoginPage({ onGuestLogin }) {
               />
             </div>
 
-            <div className="mt-4 w-full flex flex-col items-center justify-center">
+            <div className="mt-4 w-full flex flex-col items-center justify-center px-4">
               <div className="flex w-full items-center gap-4 mb-4">
-                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
-                <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">OR</span>
-                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
+                <div className="h-[1px] flex-1 bg-black dark:bg-white/80"></div>
+                <span className="text-[10px] uppercase tracking-widest font-bold text-black dark:text-white">OR</span>
+                <div className="h-[1px] flex-1 bg-black dark:bg-white/80"></div>
               </div>
               
               <button
