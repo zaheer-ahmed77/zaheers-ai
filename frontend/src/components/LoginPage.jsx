@@ -69,7 +69,7 @@ export default function LoginPage({ onGuestLogin }) {
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Unleash the full potential of your tasks.</p>
           </div>
 
-          <div className="w-full max-w-[440px] flex flex-col items-center bg-white/70 dark:bg-[#11131a]/80 backdrop-blur-2xl p-5 sm:p-6 rounded-[2rem] border border-black dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_0_40px_rgba(120,119,198,0.1)]">
+          <div className="w-full max-w-[440px] flex flex-col items-center bg-white/70 dark:bg-[#11131a]/80 backdrop-blur-2xl p-3 sm:p-6 rounded-[2rem] border border-black dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_0_40px_rgba(120,119,198,0.1)]">
             <div className="w-full flex justify-center">
               <SignIn
                 routing="hash"

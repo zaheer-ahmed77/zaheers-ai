@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Send, Sparkles, Bot, User, ChevronDown, PlusCircle, FileText, X,
   Check, Copy, Globe, FileSearch, Clock, CloudSun, Brain, Loader2,
-  AlertCircle, Upload, Image as ImageIcon,
+  AlertCircle, Upload, Image as ImageIcon, Mic, MicOff
 } from 'lucide-react';
 import { useAuth } from '@clerk/react';
 import ReactMarkdown from 'react-markdown';
@@ -139,12 +139,15 @@ const MODELS = [
 // ---------------------------------------------------------------------------
 const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selectedModel, setSelectedModel }) => {
   const [inputText, setInputText] = useState('');
-  const [attachedFile, setAttachedFile] = useState(null);
+  const [attachedImage, setAttachedImage] = useState(null);
+  const [attachedDocument, setAttachedDocument] = useState(null);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const imageInputRef = useRef(null);
   const docInputRef = useRef(null);
@@ -198,15 +201,80 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
     if (file.type.startsWith('image/') || ['.png', '.jpg', '.jpeg', '.webp'].includes(ext)) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setAttachedFile({ file, isImage: true, base64: reader.result });
+        setAttachedImage({ file, base64: reader.result });
       };
       reader.readAsDataURL(file);
     } else {
-      setAttachedFile({ file, isImage: false });
+      setAttachedDocument({ file });
     }
   };
 
   const handleFileInputChange = (e) => handleFileSelect(e.target.files?.[0]);
+
+  const handlePaste = (e) => {
+    if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+      e.preventDefault();
+      handleFileSelect(e.clipboardData.files[0]);
+    }
+  };
+
+  // Voice to Text Setup
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
+        
+        recognitionRef.current.onresult = (event) => {
+          let currentTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            currentTranscript += event.results[i][0].transcript;
+          }
+          setInputText((prev) => {
+            // Very simple merge: append the new text
+            const lastChar = prev.slice(-1);
+            const needsSpace = prev.length > 0 && lastChar !== ' ' && lastChar !== '\\n';
+            return prev + (needsSpace ? ' ' : '') + currentTranscript;
+          });
+        };
+
+        recognitionRef.current.onerror = (event) => {
+          console.error('Speech recognition error', event.error);
+          setIsListening(false);
+          if (event.error === 'not-allowed') {
+            addToast('Microphone access denied. Please allow it in your browser settings.', 'error');
+          }
+        };
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+      }
+    }
+  }, [addToast]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      addToast('Speech recognition is not supported in this browser.', 'error');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+        addToast('Listening... Speak now.', 'info', 2000);
+      } catch (e) {
+        console.error('Mic start error', e);
+        setIsListening(false);
+      }
+    }
+  };
 
   // Drag & drop
   const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
@@ -280,24 +348,32 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+
     const trimmed = inputText.trim();
-    if (!trimmed && !attachedFile) return;
+    if (!trimmed && !attachedImage && !attachedDocument) return;
     if (isGenerating || isUploading) return;
 
     let uploadedFileName = null;
     let imageBase64Payload = null;
 
-    if (attachedFile) {
-      if (attachedFile.isImage) {
-        imageBase64Payload = attachedFile.base64;
-      } else {
-        const success = await uploadFile(attachedFile.file);
-        if (success) uploadedFileName = attachedFile.file.name;
-      }
-      setAttachedFile(null);
-      if (imageInputRef.current) imageInputRef.current.value = '';
-      if (docInputRef.current) docInputRef.current.value = '';
+    if (attachedDocument) {
+      const success = await uploadFile(attachedDocument.file);
+      if (success) uploadedFileName = attachedDocument.file.name;
     }
+
+    if (attachedImage) {
+      imageBase64Payload = attachedImage.base64;
+    }
+
+    // Clear inputs immediately
+    setAttachedDocument(null);
+    setAttachedImage(null);
+    if (imageInputRef.current) imageInputRef.current.value = '';
+    if (docInputRef.current) docInputRef.current.value = '';
 
     // Build the message text
     let messageText = trimmed;
@@ -320,7 +396,7 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
     }
   };
 
-  const canSubmit = (inputText.trim() || attachedFile) && !isGenerating && !isUploading;
+  const canSubmit = (inputText.trim() || attachedImage || attachedDocument) && !isGenerating && !isUploading;
 
   return (
     <div
@@ -591,17 +667,17 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
               : 'border-slate-200 dark:border-transparent focus-within:border-indigo-400 dark:focus-within:border-[#444746]'
           }`}
         >
-          {/* Attached file badge */}
-          {attachedFile && !attachedFile.isImage && (
+          {/* Attached Document badge */}
+          {attachedDocument && (
             <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40 text-slate-700 dark:text-[#e3e3e3] px-3 py-1.5 rounded-full w-fit mx-2 mt-1">
               <FileText size={15} className="text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
-              <span className="text-sm truncate max-w-[180px] sm:max-w-[260px]">{attachedFile.file.name}</span>
-              <span className="text-xs text-slate-400 ml-1">({(attachedFile.file.size / 1024).toFixed(0)} KB)</span>
+              <span className="text-sm truncate max-w-[180px] sm:max-w-[260px]">{attachedDocument.file.name}</span>
+              <span className="text-xs text-slate-400 ml-1">({(attachedDocument.file.size / 1024).toFixed(0)} KB)</span>
               <button
                 type="button"
-                onClick={() => { setAttachedFile(null); if (imageInputRef.current) imageInputRef.current.value = ''; if (docInputRef.current) docInputRef.current.value = ''; }}
+                onClick={() => { setAttachedDocument(null); if (docInputRef.current) docInputRef.current.value = ''; }}
                 className="hover:text-red-500 transition-colors ml-0.5 flex-shrink-0"
-                title="Remove file"
+                title="Remove document"
               >
                 <X size={13} />
               </button>
@@ -609,12 +685,12 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
           )}
 
           {/* Attached image preview */}
-          {attachedFile && attachedFile.isImage && (
+          {attachedImage && (
             <div className="relative mx-2 mt-2 w-24 h-24 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm group">
-              <img src={attachedFile.base64} alt="Attached preview" className="w-full h-full object-cover" />
+              <img src={attachedImage.base64} alt="Attached preview" className="w-full h-full object-cover" />
               <button
                 type="button"
-                onClick={() => { setAttachedFile(null); if (imageInputRef.current) imageInputRef.current.value = ''; if (docInputRef.current) docInputRef.current.value = ''; }}
+                onClick={() => { setAttachedImage(null); if (imageInputRef.current) imageInputRef.current.value = ''; }}
                 className="absolute top-1 right-1 bg-black/50 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all"
                 title="Remove image"
               >
@@ -683,11 +759,27 @@ const ChatArea = ({ messages, isGenerating, thinkingStatus, onSendMessage, selec
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Message Zaheer's AI…"
+              onPaste={handlePaste}
+              placeholder={isListening ? "Listening..." : "Message Zaheer's AI (or paste files)..."}
               disabled={isGenerating}
-              className="flex-1 max-h-48 min-h-[44px] bg-transparent resize-none outline-none text-slate-900 dark:text-[#e3e3e3] placeholder-slate-400 dark:placeholder-[#5f6368] py-2.5 text-[15px] custom-scrollbar disabled:opacity-60"
+              className={`flex-1 max-h-48 min-h-[44px] bg-transparent resize-none outline-none text-slate-900 dark:text-[#e3e3e3] ${isListening ? 'placeholder-red-500 dark:placeholder-red-400' : 'placeholder-slate-400 dark:placeholder-[#5f6368]'} py-2.5 text-[15px] custom-scrollbar disabled:opacity-60`}
               rows={1}
             />
+
+            {/* Mic Toggle button */}
+            <button
+              type="button"
+              onClick={toggleListening}
+              disabled={isGenerating || isUploading}
+              className={`p-2.5 rounded-full flex-shrink-0 transition-all mr-1 ${
+                isListening 
+                  ? 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400 animate-pulse' 
+                  : 'text-slate-400 hover:bg-slate-100 hover:text-indigo-500 dark:text-[#c4c7c5] dark:hover:bg-[#2a2b2f] dark:hover:text-indigo-400'
+              }`}
+              title={isListening ? "Stop listening" : "Voice to text"}
+            >
+              {isListening ? <MicOff size={19} /> : <Mic size={19} />}
+            </button>
 
             {/* Send button */}
             <button
