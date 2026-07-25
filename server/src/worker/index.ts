@@ -94,12 +94,14 @@ const worker = new Worker('file-ingest', async job => {
     if (fileName.toLowerCase().endsWith('.pdf')) {
       console.log(`[Worker] Parsing PDF with pdf-parse-new...`)
       const data = await (pdfParse as any)(buffer)
-      extractedText = data.text
-      console.log(`[Worker] ✅ PDF parsed: ${extractedText.length} characters across ${data.numpages} page(s)`)
+      extractedText = data.text || ''
+      console.log(`[Worker] ✅ PDF parsed: ${extractedText.length} characters across ${data.numpages || 1} page(s)`)
     } else if (fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx')) {
       console.log(`[Worker] Parsing Word document with officeparser...`)
       const officeParser = await import('officeparser')
-      extractedText = (await officeParser.parseOffice(buffer)) as any as string
+      // Pass the file path directly so it can infer the extension
+      extractedText = (await officeParser.parseOffice(fileUrl)) as any as string
+      extractedText = extractedText || ''
       console.log(`[Worker] ✅ Word document parsed: ${extractedText.length} characters`)
     } else {
       extractedText = buffer.toString('utf-8')
@@ -110,28 +112,33 @@ const worker = new Worker('file-ingest', async job => {
     throw new Error(`Parse failed: ${err.message}`)
   }
 
+  extractedText = String(extractedText)
   if (!extractedText.trim()) {
     console.error(`[Worker] ❌ File "${fileName}" is empty or produced no extractable text`)
     throw new Error('File is empty or could not be parsed.')
   }
 
-  // ── Step 1.5: Save raw text to DB for direct reading ──────────────────────
+  // ── Step 1.5: Save raw text to DB and resolve User ──────────────────────
+  let internalUserId = userId;
   try {
-    // The job.data.userId is actually the clerkId. We need the internal User ID.
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    
-    if (user) {
-      await prisma.document.create({
-        data: {
-          userId: user.id,
-          fileName,
-          content: extractedText
-        }
+    // Ensure the user exists in the DB so we can use their CUID
+    let user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    if (!user) {
+      user = await prisma.user.create({
+        data: { clerkId: userId, email: `${userId}@placeholder.com` }
       })
-    } else {
-      console.warn(`[Worker] User with clerkId ${userId} not found in DB. Document text not saved.`)
     }
-    console.log(`[Worker] ✅ Saved raw text to Document table`)
+    
+    internalUserId = user.id; // Guaranteed to be CUID now
+
+    await prisma.document.create({
+      data: {
+        userId: internalUserId,
+        fileName,
+        content: extractedText
+      }
+    })
+    console.log(`[Worker] ✅ Saved raw text to Document table for CUID ${internalUserId}`)
   } catch (dbErr: any) {
     console.error(`[Worker] ❌ Failed to save raw text to Document table:`, dbErr.message)
     // We don't throw here so that Pinecone ingestion can still proceed
@@ -174,9 +181,9 @@ const worker = new Worker('file-ingest', async job => {
           batch.map(async (text, batchIdx) => {
             const embedding = await embeddings.embedQuery(text)
             return {
-              id: `${userId}-${job.id}-chunk-${i + batchIdx}`,
+              id: `${internalUserId}-${job.id}-chunk-${i + batchIdx}`,
               values: embedding,
-              metadata: { userId, fileName, text },
+              metadata: { userId: internalUserId, fileName, text },
             }
           })
         )
