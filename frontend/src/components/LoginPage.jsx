@@ -66,7 +66,9 @@ export default function LoginPage({ onGuestLogin }) {
                 routing="hash"
                 appearance={{
                   elements: {
-                    card: { boxShadow: "none", backgroundColor: "transparent", padding: 0, margin: 0 },
+                    rootBox: { width: "100%" },
+                    cardBox: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0 },
+                    card: { boxShadow: "none", background: "transparent", border: "none", margin: 0, padding: 0, width: "100%" },
                     headerTitle: { color: "var(--clerk-text-main)" },
                     headerSubtitle: { color: "var(--clerk-text-muted)" },
                     socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
