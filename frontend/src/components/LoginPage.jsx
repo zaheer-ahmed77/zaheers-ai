@@ -60,52 +60,53 @@ export default function LoginPage({ onGuestLogin }) {
             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Unleash the full potential of your tasks.</p>
           </div>
 
-          <div className="w-full max-w-md flex justify-center bg-white/60 dark:bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-slate-200/60 dark:border-white/10 shadow-xl shadow-slate-200/50 dark:shadow-2xl">
-            <SignIn
-              routing="hash"
-              appearance={{
-                elements: {
-                  // footerAction: { display: "none" },
-                  card: { boxShadow: "none", backgroundColor: "transparent" },
-                  headerTitle: { color: "var(--clerk-text-main)" },
-                  headerSubtitle: { color: "var(--clerk-text-muted)" },
-                  socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
-                  formFieldLabel: { color: "var(--clerk-text-main)" },
-                  formFieldInput: { 
-                    color: "var(--clerk-input-text)", 
-                    backgroundColor: "var(--clerk-input-bg)",
-                    borderColor: "var(--clerk-border)"
+          <div className="w-full max-w-md flex flex-col items-center bg-white/60 dark:bg-black/40 backdrop-blur-xl p-6 sm:p-8 rounded-[2rem] border border-slate-200/60 dark:border-white/10 shadow-xl shadow-slate-200/50 dark:shadow-2xl">
+            <div className="w-full flex justify-center">
+              <SignIn
+                routing="hash"
+                appearance={{
+                  elements: {
+                    card: { boxShadow: "none", backgroundColor: "transparent", padding: 0, margin: 0 },
+                    headerTitle: { color: "var(--clerk-text-main)" },
+                    headerSubtitle: { color: "var(--clerk-text-muted)" },
+                    socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
+                    formFieldLabel: { color: "var(--clerk-text-main)" },
+                    formFieldInput: { 
+                      color: "var(--clerk-input-text)", 
+                      backgroundColor: "var(--clerk-input-bg)",
+                      borderColor: "var(--clerk-border)"
+                    },
+                    dividerText: { color: "var(--clerk-text-muted)" },
+                    identityPreviewText: { color: "var(--clerk-text-main)" },
+                    socialButtonsBlockButton: { 
+                      backgroundColor: "var(--clerk-social-bg)", 
+                      borderColor: "var(--clerk-border)",
+                      color: "var(--clerk-social-text)"
+                    }
                   },
-                  dividerText: { color: "var(--clerk-text-muted)" },
-                  identityPreviewText: { color: "var(--clerk-text-main)" },
-                  socialButtonsBlockButton: { 
-                    backgroundColor: "var(--clerk-social-bg)", 
-                    borderColor: "var(--clerk-border)",
-                    color: "var(--clerk-social-text)"
-                  }
-                },
-              }}
-            />
-          </div>
-
-          <div className="mt-6 w-full max-w-md flex flex-col items-center justify-center">
-            <div className="flex w-full items-center gap-4 mb-6">
-              <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
-              <span className="text-xs font-medium text-slate-400">OR</span>
-              <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
+                }}
+              />
             </div>
-            
-            <button
-              onClick={onGuestLogin}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-medium text-sm transition-colors shadow-sm"
-            >
-              <div className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-                </svg>
+
+            <div className="mt-4 w-full flex flex-col items-center justify-center">
+              <div className="flex w-full items-center gap-4 mb-5">
+                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
+                <span className="text-[11px] uppercase tracking-wider font-semibold text-slate-400">OR</span>
+                <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10"></div>
               </div>
-              Continue as Guest (No History)
-            </button>
+              
+              <button
+                onClick={onGuestLogin}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-medium text-sm transition-all shadow-sm hover:shadow active:scale-[0.98]"
+              >
+                <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
+                  </svg>
+                </div>
+                Continue as Guest
+              </button>
+            </div>
           </div>
 
           <div className="md:hidden mt-8 text-xs text-slate-400 dark:text-slate-500 font-medium">© {getCurrentYear()} Zaheer's AI Inc. All rights reserved.</div>
