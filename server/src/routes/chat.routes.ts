@@ -33,7 +33,7 @@ const getModel = (modelName: string) => {
   if (modelName === 'openrouter-gemini' && process.env.OPENROUTER_API_KEY) {
     return new ChatOpenAI({
       modelName: "google/gemini-2.0-flash-exp:free",
-      openAIApiKey: process.env.OPENROUTER_API_KEY,
+      apiKey: process.env.OPENROUTER_API_KEY,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",
       },
@@ -43,7 +43,7 @@ const getModel = (modelName: string) => {
   if (modelName === 'github-gpt-4o' && process.env.GITHUB_TOKEN) {
     return new ChatOpenAI({
       modelName: "gpt-4o",
-      openAIApiKey: process.env.GITHUB_TOKEN,
+      apiKey: process.env.GITHUB_TOKEN,
       configuration: {
         baseURL: "https://models.inference.ai.azure.com",
       },
