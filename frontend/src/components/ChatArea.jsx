@@ -130,8 +130,9 @@ const ThinkingIndicator = ({ status }) => {
 // Model definitions
 // ---------------------------------------------------------------------------
 const MODELS = [
-  { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', sublabel: 'Default · Smart & Fast', icon: '✦' },
-  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'via Groq', icon: '🦙' },
+  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'via Groq (Free & Fast)', icon: '🦙' },
+  { value: 'openrouter-gemini', label: 'Gemini 2.0 Flash', sublabel: 'via OpenRouter (Free Vision)', icon: '🌐' },
+  { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', sublabel: 'via Google Studio', icon: '✦' },
 ];
 
 // ---------------------------------------------------------------------------

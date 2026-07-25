@@ -20,7 +20,7 @@ import { createSaveMemoryTool, createQueryMemoryTool, createDeleteMemoryTool } f
 
 export const chatRoutes = new Hono()
 
-const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-1.5-flash']
+const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-3.5-flash', 'openrouter-gemini']
 
 const getModel = (modelName: string) => {
   if (modelName === 'llama-3.3-70b-versatile' && process.env.GROQ_API_KEY) {
@@ -30,9 +30,19 @@ const getModel = (modelName: string) => {
       temperature: 0.7,
     })
   }
+  if (modelName === 'openrouter-gemini' && process.env.OPENROUTER_API_KEY) {
+    return new ChatOpenAI({
+      modelName: "google/gemini-2.0-flash-exp:free",
+      openAIApiKey: process.env.OPENROUTER_API_KEY,
+      configuration: {
+        baseURL: "https://openrouter.ai/api/v1",
+      },
+      temperature: 0.7,
+    })
+  }
   // Default to Gemini Flash
   return new ChatGoogleGenerativeAI({
-    model: "gemini-1.5-flash",
+    model: "gemini-3.5-flash",
     apiKey: process.env.GEMINI_API_KEY,
     temperature: 0.7,
     safetySettings: [
@@ -132,10 +142,10 @@ chatRoutes.post('/', async (c) => {
     return c.json({ error: 'Message text is required' }, 400)
   }
 
-  // If there's an image, Groq won't support it well, force Gemini Flash
+  // If there's an image, Groq won't support it well, force a Vision model
   const modelName = imageBase64 
-    ? 'gemini-1.5-flash' 
-    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : 'gemini-1.5-flash')
+    ? (process.env.OPENROUTER_API_KEY ? 'openrouter-gemini' : 'gemini-3.5-flash')
+    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : (process.env.GROQ_API_KEY ? 'llama-3.3-70b-versatile' : 'gemini-3.5-flash'))
 
   let user = null;
   let chat = null;
