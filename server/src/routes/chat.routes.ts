@@ -313,7 +313,7 @@ TOOLS AVAILABLE:
         }
       } catch (agentErr: any) {
         console.error('[Agent Error]:', agentErr)
-        const errMsg = "I encountered an error while processing that request. Please try again."
+        const errMsg = `I encountered an error while processing that request: ${agentErr?.message || 'Unknown Agent Error'}`;
         aiResponseText += `\n\n[Error: ${errMsg}]`
         await stream.writeSSE({ data: `\\n\\n${errMsg}` })
       }
