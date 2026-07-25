@@ -20,7 +20,7 @@ import { createSaveMemoryTool, createQueryMemoryTool, createDeleteMemoryTool } f
 
 export const chatRoutes = new Hono()
 
-const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-3.5-flash', 'openrouter-gemini']
+const ALLOWED_MODELS = ['llama-3.3-70b-versatile', 'gemini-3.5-flash', 'openrouter-gemini', 'github-gpt-4o']
 
 const getModel = (modelName: string) => {
   if (modelName === 'llama-3.3-70b-versatile' && process.env.GROQ_API_KEY) {
@@ -36,6 +36,16 @@ const getModel = (modelName: string) => {
       openAIApiKey: process.env.OPENROUTER_API_KEY,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",
+      },
+      temperature: 0.7,
+    })
+  }
+  if (modelName === 'github-gpt-4o' && process.env.GITHUB_TOKEN) {
+    return new ChatOpenAI({
+      modelName: "gpt-4o",
+      apiKey: process.env.GITHUB_TOKEN,
+      configuration: {
+        baseURL: "https://models.inference.ai.azure.com",
       },
       temperature: 0.7,
     })
@@ -144,8 +154,8 @@ chatRoutes.post('/', async (c) => {
 
   // If there's an image, Groq won't support it well, force a Vision model
   const modelName = imageBase64 
-    ? (process.env.OPENROUTER_API_KEY ? 'openrouter-gemini' : 'gemini-3.5-flash')
-    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : (process.env.GROQ_API_KEY ? 'llama-3.3-70b-versatile' : 'gemini-3.5-flash'))
+    ? (process.env.GITHUB_TOKEN ? 'github-gpt-4o' : (process.env.OPENROUTER_API_KEY ? 'openrouter-gemini' : 'gemini-3.5-flash'))
+    : (ALLOWED_MODELS.includes(requestedModel ?? '') ? requestedModel! : (process.env.GITHUB_TOKEN ? 'github-gpt-4o' : 'gemini-3.5-flash'))
 
   let user = null;
   let chat = null;

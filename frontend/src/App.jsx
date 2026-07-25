@@ -10,7 +10,7 @@ import { LogOut } from 'lucide-react';
 function AuraApp({ onOpenMemory, isGuest, onGuestLogout }) {
   const [isSidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
   const [currentChatId, setCurrentChatId] = useState(null);
-  const [selectedModel, setSelectedModel] = useState('llama-3.3-70b-versatile');
+  const [selectedModel, setSelectedModel] = useState('github-gpt-4o');
 
   const { history, fetchHistory, deleteChat } = useChat(isGuest);
   const { messages, setInitialMessages, sendMessage, isGenerating, thinkingStatus } = useMessages(isGuest);
