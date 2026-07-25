@@ -99,9 +99,12 @@ const worker = new Worker('file-ingest', async job => {
     } else if (fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx')) {
       console.log(`[Worker] Parsing Word document with officeparser...`)
       const officeParser = await import('officeparser')
-      // Pass the file path directly so it can infer the extension
-      extractedText = (await officeParser.parseOffice(fileUrl)) as any as string
-      extractedText = extractedText || ''
+      const parsed = await officeParser.parseOffice(fileUrl)
+      if (parsed && typeof (parsed as any).toText === 'function') {
+        extractedText = (parsed as any).toText()
+      } else {
+        extractedText = String(parsed || '')
+      }
       console.log(`[Worker] ✅ Word document parsed: ${extractedText.length} characters`)
     } else {
       extractedText = buffer.toString('utf-8')
