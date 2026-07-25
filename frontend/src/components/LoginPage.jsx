@@ -69,7 +69,7 @@ export default function LoginPage() {
                   card: { boxShadow: "none", backgroundColor: "transparent" },
                   headerTitle: { color: "var(--clerk-text-main)" },
                   headerSubtitle: { color: "var(--clerk-text-muted)" },
-                  socialButtonsBlockButtonText: { color: "var(--clerk-text-main)" },
+                  socialButtonsBlockButtonText: { color: "var(--clerk-social-text)" },
                   formFieldLabel: { color: "var(--clerk-text-main)" },
                   formFieldInput: { 
                     color: "var(--clerk-text-main)", 
@@ -79,8 +79,9 @@ export default function LoginPage() {
                   dividerText: { color: "var(--clerk-text-muted)" },
                   identityPreviewText: { color: "var(--clerk-text-main)" },
                   socialButtonsBlockButton: { 
-                    backgroundColor: "var(--clerk-input-bg)", 
-                    borderColor: "var(--clerk-border)" 
+                    backgroundColor: "var(--clerk-social-bg)", 
+                    borderColor: "var(--clerk-border)",
+                    color: "var(--clerk-social-text)"
                   }
                 },
               }}

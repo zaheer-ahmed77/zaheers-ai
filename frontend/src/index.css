@@ -11,13 +11,17 @@
     --clerk-input-bg: #ffffff;
     --clerk-border: #e2e8f0;
     --clerk-placeholder: #94a3b8;
+    --clerk-social-bg: #ffffff;
+    --clerk-social-text: #0f172a;
   }
   .dark {
     --clerk-text-main: #ffffff;
     --clerk-text-muted: #94a3b8;
     --clerk-input-bg: rgba(255, 255, 255, 0.05);
     --clerk-border: rgba(255, 255, 255, 0.15);
-    --clerk-placeholder: #94a3b8;
+    --clerk-placeholder: #ffffff;
+    --clerk-social-bg: #ffffff;
+    --clerk-social-text: #0f172a;
   }
   body {
     @apply bg-slate-50 dark:bg-[#0b0f19] text-slate-900 dark:text-[#e3e3e3] font-sans antialiased;
