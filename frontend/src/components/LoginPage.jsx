@@ -65,7 +65,7 @@ export default function LoginPage() {
               routing="hash"
               appearance={{
                 elements: {
-                  footerAction: { display: "none" },
+                  // footerAction: { display: "none" },
                   card: { boxShadow: "none", backgroundColor: "transparent" },
                   headerTitle: { color: "var(--clerk-text-main)" },
                   headerSubtitle: { color: "var(--clerk-text-muted)" },
