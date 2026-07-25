@@ -199,7 +199,7 @@ chatRoutes.post('/', async (c) => {
   return streamSSE(c, async (stream) => {
     try {
       const llm = getModel(modelName)
-      let tools = [
+      let tools: any[] = [
         timeTool,
         weatherTool,
         internetSearchTool,
