@@ -130,10 +130,10 @@ const ThinkingIndicator = ({ status }) => {
 // Model definitions
 // ---------------------------------------------------------------------------
 const MODELS = [
-  { value: 'github-gpt-4o', label: 'GPT-4o', sublabel: 'via GitHub Models (Smartest)', icon: '🧠' },
-  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'via Groq (Free & Fast)', icon: '🦙' },
-  { value: 'openrouter-gemini', label: 'Gemini 2.0 Flash', sublabel: 'via OpenRouter (Free Vision)', icon: '🌐' },
-  { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', sublabel: 'via Google Studio', icon: '✦' },
+  { value: 'github-gpt-4o', label: 'GPT-4o', sublabel: 'Smartest Model', icon: '🧠' },
+  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sublabel: 'Free & Fast', icon: '🦙' },
+  { value: 'openrouter-gemini', label: 'Gemini 2.0 Flash', sublabel: 'Free Vision API', icon: '🌐' },
+  { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash', sublabel: 'Fast & Reliable', icon: '✦' },
 ];
 
 // ---------------------------------------------------------------------------

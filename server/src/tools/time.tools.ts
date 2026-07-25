@@ -17,6 +17,8 @@ export const timeTool = tool(
   {
     name: "get_current_time",
     description: "Returns the current date and time.",
-    schema: z.any(),
+    schema: z.object({
+      query: z.string().optional().describe("Optional query, not required to get the current time.")
+    }),
   }
 );

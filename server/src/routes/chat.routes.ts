@@ -43,7 +43,7 @@ const getModel = (modelName: string) => {
   if (modelName === 'github-gpt-4o' && process.env.GITHUB_TOKEN) {
     return new ChatOpenAI({
       modelName: "gpt-4o",
-      apiKey: process.env.GITHUB_TOKEN,
+      openAIApiKey: process.env.GITHUB_TOKEN,
       configuration: {
         baseURL: "https://models.inference.ai.azure.com",
       },
