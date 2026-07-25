@@ -32,7 +32,7 @@ const getModel = (modelName: string) => {
   }
   if (modelName === 'openrouter-gemini' && process.env.OPENROUTER_API_KEY) {
     return new ChatOpenAI({
-      modelName: "google/gemini-2.0-flash-exp:free",
+      modelName: "google/gemini-2.0-pro-exp-02-05:free",
       apiKey: process.env.OPENROUTER_API_KEY,
       configuration: {
         baseURL: "https://openrouter.ai/api/v1",
