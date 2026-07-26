@@ -24,7 +24,7 @@ app.use('*', cors({
     if (allowedOrigin && origin === allowedOrigin) return origin
     return origin // permissive for now — restrict in production via FRONTEND_URL
   },
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Guest-Mode'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   exposeHeaders: ['Content-Length', 'X-Request-Id'],
   credentials: true,
