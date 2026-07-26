@@ -14,12 +14,13 @@
 
 ## ✨ Features
 
-- **🧠 Advanced AI Integrations:** Leverage Langchain with Google GenAI, Groq, and OpenAI models.
-- **📚 RAG Capabilities:** Built-in support for Retrieval-Augmented Generation using Pinecone Vector Database.
+- **🧠 Multi-Model Agent:** Switch seamlessly between GitHub Models (GPT-4o), OpenRouter (Gemini 2.0 Pro), and Groq (Llama 3.3).
+- **🌐 Real-Time Web Search:** Integrated with Tavily API for live internet access and up-to-date answers.
+- **📚 RAG Capabilities:** Built-in support for Retrieval-Augmented Generation using Pinecone Vector Database for Document analysis.
 - **⚡ High Performance:** Fast and scalable backend powered by Hono and Node.js.
-- **🔐 Secure Authentication:** Seamless user authentication integrated with Clerk.
+- **🔐 Secure Authentication:** Seamless user authentication integrated with Clerk, plus a fully functional **Guest Mode** for quick access.
 - **🎨 Modern UI:** Beautiful, responsive frontend built with React, Vite, Tailwind CSS, and Framer Motion.
-- **🔄 Background Jobs:** Reliable background task processing using BullMQ and Redis.
+- **🔄 Background Jobs:** Reliable background task processing using BullMQ and Redis (Upstash) for parsing heavy documents.
 - **🗄️ Robust Database:** PostgreSQL data management with Prisma ORM.
 
 ## 🛠️ Tech Stack
@@ -34,8 +35,9 @@
 - **Framework:** Hono + Node.js
 - **Database ORM:** Prisma (PostgreSQL)
 - **Vector DB:** Pinecone
-- **Queue/Workers:** BullMQ (Redis)
-- **AI / LLMs:** Langchain (OpenAI, Groq, Google GenAI)
+- **Queue/Workers:** BullMQ (Redis via Upstash)
+- **AI / LLMs:** Langchain (GitHub GPT-4o, OpenRouter Gemini, Groq)
+- **Search API:** Tavily
 - **File Processing:** PDF Parse, Office Parser, Cloudinary
 - **Authentication:** Clerk Backend
 
@@ -90,9 +92,10 @@ You'll need to set up the following keys in your respective `.env` files.
 
 **Server (`server/.env`):**
 - `DATABASE_URL` (Postgres connection string)
-- `REDIS_URL`
+- `REDIS_URL` (Upstash or local Redis URL)
 - `CLERK_SECRET_KEY` & `CLERK_PUBLISHABLE_KEY`
-- API Keys for AI: `OPENAI_API_KEY`, `GROQ_API_KEY`, `GOOGLE_API_KEY`
+- API Keys for AI: `GITHUB_TOKEN` (for GPT-4o), `OPENROUTER_API_KEY` (for Gemini 2.0), `GROQ_API_KEY`, `GEMINI_API_KEY` (fallback)
+- `TAVILY_API_KEY` (for Internet Search)
 - `PINECONE_API_KEY` & `PINECONE_INDEX`
 - Cloudinary Keys (if used for image uploads)
 
